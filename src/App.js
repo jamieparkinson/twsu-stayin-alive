@@ -1,9 +1,11 @@
 import React from 'react';
 import {
   StyleSheet,
+  Text,
   View
 } from 'react-native';
 import YouTube from "./YouTube";
+import createBleManager from './ble';
 
 const styles = StyleSheet.create({
   wrapper: {
@@ -13,11 +15,31 @@ const styles = StyleSheet.create({
   }
 });
 
+const ble = createBleManager();
+
 class App extends React.Component {
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      connected: false
+    };
+  }
+
+  async componentDidMount() {
+    await ble.init();
+    await ble.connect();
+
+    this.setState({ connected: true });
+  }
+
   render() {
     return (
       <View style={styles.wrapper}>
-        <YouTube />
+        <Text>
+          {this.state.connected ? 'Bluetooth Connected': 'Connecting to bluetooth device...'}
+        </Text>
+        <YouTube video={YouTube.videos.stayingAlive} />
       </View>
     );
   }

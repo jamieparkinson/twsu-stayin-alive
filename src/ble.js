@@ -11,8 +11,10 @@ const createManager = () => {
       return new Promise((resolve) => {
         const subscription = manager.onStateChange((state) => {
           if (state === 'PoweredOn') {
-            resolve();
+            console.log('[BLE] initialised BLE manager');
+
             subscription.remove();
+            resolve();
           }
         }, true);
       });
@@ -24,15 +26,25 @@ const createManager = () => {
             reject(error);
           }
 
-          console.log(`[BLE]: Found device ${scannedDevice.name}`);
+          console.log(`[BLE]: Found device '${scannedDevice.name}'`);
           if (scannedDevice.name === deviceName) {
             manager.stopDeviceScan();
 
-            device = await scannedDevice.connect();
+            const connectedDevice = await scannedDevice.connect();
+            device = await connectedDevice.discoverAllServicesAndCharacteristics();
+
             resolve(device);
           }
         })
       });
+    },
+    destroy: async () => {
+      if (device) {
+        await device.cancelConnection();
+      }
+      if (manager) {
+        manager.destroy();
+      }
     }
   };
 };

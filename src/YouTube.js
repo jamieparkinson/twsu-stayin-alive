@@ -7,18 +7,16 @@ import {
 
 const screenDims = Dimensions.get('window');
 
-const dims = {
-  width: 0.7 * screenDims.width,
-  height: 0.7 * screenDims.height,
-};
-
 const YouTube = ({ video }) => (
-  <View style={{ height: dims.height }}>
+  <View style={{ height: screenDims.height }}>
     <WebView
-      source={{ uri: `https://www.youtube.com/embed/${video}?rel=0&autoplay=0&showinfo=0&controls=0` }}
+      source={{ uri: `https://www.youtube.com/embed/${video}?rel=0&autoplay=0&showinfo=0&controls=0&enablejsapi=1` }}
       javascriptEnabled
       scalesPageToFit
-      style={dims}
+      style={{ width:
+        screenDims.width,
+        height: screenDims.height
+      }}
     />
   </View>
 );

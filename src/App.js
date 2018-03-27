@@ -1,17 +1,28 @@
 import React from 'react';
 import {
+  Image,
   StyleSheet,
   Text,
   View
 } from 'react-native';
 import YouTube from "./YouTube";
 import createBleManager from './ble';
+import siren from './siren';
+
+import warning from './warning.png';
 
 const styles = StyleSheet.create({
   wrapper: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center'
+  },
+  warning: {
+    flex: 1,
+    backgroundColor: '#FF5550'
+  },
+  warningImage: {
+    flex: 1
   }
 });
 
@@ -22,8 +33,19 @@ class App extends React.Component {
     super(props);
 
     this.state = {
-      connected: false
+      connected: false,
+      alert: false
     };
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    if (!prevState.alert && this.state.alert) {
+      siren.play();
+    }
+
+    if (prevState.alert && !this.state.alert) {
+      siren.pause();
+    }
   }
 
   async componentDidMount() {
@@ -33,13 +55,24 @@ class App extends React.Component {
     this.setState({ connected: true });
   }
 
+  componentWillUnmount() {
+    siren.release();
+    ble.destroy();
+  }
+
   render() {
     return (
       <View style={styles.wrapper}>
-        <Text>
-          {this.state.connected ? 'Bluetooth Connected': 'Connecting to bluetooth device...'}
-        </Text>
-        <YouTube video={YouTube.videos.stayingAlive} />
+        {this.state.alert ? (
+          <View style={styles.warning}>
+            <Image
+              source={warning}
+              style={styles.warningImage}
+            />
+          </View>
+        ) : (
+          <YouTube video={YouTube.videos.stayingAlive} />
+        )}
       </View>
     );
   }

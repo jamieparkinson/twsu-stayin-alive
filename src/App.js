@@ -38,6 +38,21 @@ class App extends React.Component {
     };
   }
 
+  handleNotification(time) {
+    const nTime = parseInt(time);
+    if (isNaN(nTime)) {
+      return;
+    }
+
+    if (nTime <= 2) {
+      this.setState({ alert: true })
+    }
+
+    if (this.state.alert && nTime >= 7) {
+      this.setState({ alert: false });
+    }
+  }
+
   componentDidUpdate(prevProps, prevState) {
     if (!prevState.alert && this.state.alert) {
       siren.play();
@@ -53,6 +68,8 @@ class App extends React.Component {
     await ble.connect();
 
     this.setState({ connected: true });
+
+    ble.listen(this.handleNotification.bind(this));
   }
 
   componentWillUnmount() {

@@ -59,7 +59,7 @@ class App extends React.Component {
     }
 
     if (prevState.alert && !this.state.alert) {
-      siren.pause();
+      siren.stop();
     }
   }
 
